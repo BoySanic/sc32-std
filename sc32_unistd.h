@@ -10,5 +10,7 @@
 // Low-level byte streams. Returns number of bytes processed.
 int sc32_write(int fd, const char *buf, size_t count);
 int sc32_read(int fd, char *buf, size_t count);
+
+// Peripheral specific functions
 int sc32_read_clock();
 #endif
