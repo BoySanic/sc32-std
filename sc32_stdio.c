@@ -1,6 +1,6 @@
 #include "sc32_stdio.h"
 #include "sc32_unistd.h"
-#include <stdlib.h>
+
 
 void sc32_putc(char c) {
     sc32_write(1, &c, 1); // Pass to file descriptor 1 (stdout)
@@ -12,14 +12,31 @@ char sc32_getc(void) {
     return c;
 }
 
+void sc32_print_hex(uintptr_t val) {
+    char hex[] = "0123456789ABCDEF";
+    sc32_prints("0x");
+    for (int i = 7; i >= 0; i--) {
+        sc32_putc(hex[(val >> (i * 4)) & 0xF]);
+    }
+}
+
+void sc32_print_dec(uintptr_t val) {
+  uint32_t divisor = 1000000000;
+  while (divisor > 0) {
+    if (divisor <= val) {
+      uint32_t digit = (val / divisor) % 10;
+      digit += 48; // Get ASCII character
+      sc32_putc((unsigned char)digit);
+    }
+    divisor /= 10;
+  }
+}
 void sc32_prints(const char *s) {
     size_t len = 0;
-    while (*s) {
+    while (s[len]) {
       len++;
-      s++;
     }
 
-    // Blast the whole string at once via unistd
     sc32_write(1, s, len); 
 }
 
@@ -39,7 +56,7 @@ char* sc32_readline(void) {
             buf_size += 16;
             buf = realloc(buf, buf_size);
         }
-
+        sc32_putc(input);
         buf[str_size++] = input;
     } while (input != '\0');
 
